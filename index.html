@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check DSA Marks</title>
+    <style>
+        body{
+            padding: 10px;
+            background-color: #000;
+            color: #fff;
+        }
+        input[type="Checkbox"] {
+            height: 20px;
+            width: 20px;
+        }
+        div{
+            margin-top: 20px;
+            padding: 10px;
+            background-color: rgb(0, 78, 44);
+            border-radius: 8px;
+
+        }
+        div#questions{
+            background-color: #000;
+        }
+        button{
+            display: block;
+            margin: auto;
+            height: 40px;
+            width: 100px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>Check DSA Marks</h2>
+    <p>
+        There is no guarantee that these are the correct answers!
+        <br>
+        Use the answers at your own risk.
+    </p>
+    <form id="mcqForm">
+        <div id="questions"></div>
+        <button type="submit">Check Marks</button>
+    </form>
+    <h3 id="result"></h3>
+
+    <script>
+        const correctAnswers = {
+            "q1": ["A", "B", "C"], "q2": ["A", "C"], "q3": ["C"],
+            "q4": ["A", "B", "D", "E"], "q5": ["A"], "q6": ["C", "E"], "q7": ["B", "C"],
+            "q8": ["B", "C", "D"], "q9": ["B"], "q10": ["E"],
+            "q11": ["A", "E"], "q12": ["A", "B", "D", "E"], "q13": ["A", "B"], "q14": ["A", "B", "C", "E"],
+            "q15": ["A", "B"], "q16": ["C", "E"], "q17": ["A", "E"], "q18": ["A", "B"],
+            "q19": ["A", "D", "E"], "q20": ["A", "C", "E"], "q21": ["E"], "q22": ["A"],
+            "q23": ["D"], "q24": ["A", "B", "E"], "q25": ["B"], "q26": ["B", "C"],
+            "q27": ["A", "B", "D"], "q28": ["B", "E"], "q29": ["B"], "q30": ["E"],
+            "q31": ["A", "C", "D"], "q32": ["C"], "q33": ["B"], "q34": ["A", "B", "C", "D"], "q35": ["C"]
+        };
+
+        function generateQuestions() {
+            const container = document.getElementById("questions");
+            for (let i = 1; i <= 35; i++) {
+                let div = document.createElement("div");
+                div.innerHTML = `<p>Question ${i}: <span id='score-q${i}'></span></p>`;
+                ["A", "B", "C", "D", "E"].forEach(option => {
+                    div.innerHTML += `<label>
+                        <input type="checkbox" name="q${i}" value="${option}"> ${option}
+                    </label>`;
+                });
+                container.appendChild(div);
+            }
+        }
+
+        function calculateMarks(event) {
+            event.preventDefault();
+            let totalMarks = 0;
+
+            for (let i = 1; i <= 35; i++) {
+                const selected = Array.from(document.querySelectorAll(`input[name='q${i}']:checked`))
+                                     .map(input => input.value);
+                const correct = correctAnswers[`q${i}`] || [];
+                
+                let correctCount = correct.length;
+                let incorrectCount = 5 - correctCount;
+                
+                let markPerCorrect = 2 / correctCount;
+                let markPerIncorrect = -2 / incorrectCount;
+                
+                let questionScore = 0;
+                selected.forEach(answer => {
+                    if (correct.includes(answer)) {
+                        questionScore += markPerCorrect;
+                    } else {
+                        questionScore += markPerIncorrect;
+                    }
+                });
+                
+                questionScore = Math.max(0, questionScore);
+                totalMarks += questionScore;
+                document.getElementById(`score-q${i}`).innerText = `Score: ${questionScore.toFixed(2)}`;
+            }
+            document.getElementById("result").innerText = `Your Score: ${totalMarks.toFixed(2)}`;
+        }
+
+        document.getElementById("mcqForm").addEventListener("submit", calculateMarks);
+        generateQuestions();
+    </script>
+</body>
+</html>
